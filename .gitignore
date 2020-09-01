@@ -1,0 +1,8 @@
+.gitignore
+.idea/misc.xml
+.idea/modules.xml
+.idea/ts-drag-drop.iml
+.idea/vcs.xml
+app.js
+node_modules/
+package-lock.json
