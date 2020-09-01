@@ -1,9 +1,20 @@
+class Project {
+    public readonly id: string;
+
+    constructor(public title: string, public description: string, public people: number, public status: 'active' | 'finished' = 'active') {
+        this.id = Date.now().toString(16);
+    }
+}
+
+type Listener = (items: Project[]) => void;
+
 class ProjectState {
-    private listeners: any[] = [];
-    private _projects: any[] = [];
+    private listeners: Listener[] = [];
+    private projects: Project[] = [];
     private static instance: ProjectState;
 
-    constructor() {}
+    constructor() {
+    }
 
     static getInstance() {
         if (this.instance)
@@ -12,26 +23,21 @@ class ProjectState {
         return this.instance;
     }
 
-    public addListener(listenerFn: Function) {
+    public addListener(listenerFn: Listener) {
         this.listeners.push(listenerFn);
     }
 
     public addProject(title: string, description: string, people: number) {
-        const project = {
-            id: Date.now().toString(16),
+        const project = new Project(
             title,
             description,
             people
-        };
+        );
+
+        this.projects.push(project);
 
         for (const listener of this.listeners)
-            listener(this._projects.slice());
-
-        this._projects.push(project);
-    }
-
-    get project() {
-        return this._projects;
+            listener(this.projects.slice());
     }
 }
 
@@ -39,7 +45,7 @@ class ProjectList {
     templateElement: HTMLTemplateElement;
     hostElement: HTMLDivElement;
     element: HTMLElement;
-    assignedProjects: any[] = [];
+    assignedProjects: Project[] = [];
 
     constructor(private type: 'active' | 'finished') {
         this.templateElement = <HTMLTemplateElement>document.getElementById('project-list')!;
@@ -50,7 +56,7 @@ class ProjectList {
         this.element = <HTMLElement>importedNode.firstElementChild;
         this.element.id = `${this.type}-projects`;
 
-        ProjectState.getInstance().addListener((projects: any) => {
+        ProjectState.getInstance().addListener((projects: Project[]) => {
             this.assignedProjects = projects;
             this.renderProjects();
         });
@@ -140,7 +146,7 @@ class ProjectInput {
 
         const [title, description, people] = userInput;
 
-        ProjectState.getInstance().addProject(title, description,  people);
+        ProjectState.getInstance().addProject(title, description, people);
     }
 
     private configure() {
@@ -155,3 +161,5 @@ class ProjectInput {
 const projectInput = new ProjectInput();
 const activeProjectList = new ProjectList('active');
 const finishedProjectList = new ProjectList('finished');
+
+console.log(projectInput, activeProjectList, finishedProjectList);
