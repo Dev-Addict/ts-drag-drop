@@ -3,6 +3,9 @@
 .idea/modules.xml
 .idea/ts-drag-drop.iml
 .idea/vcs.xml
-app.js
+src/app.js
 node_modules/
 package-lock.json
+.idea/dictionaries/
+.idea/inspectionProfiles/
+dist/
